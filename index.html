@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <title>🪖 צבא בארפי</title>
+
+  <!-- עיצוב -->
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #0f172a;
+      color: white;
+      text-align: center;
+    }
+
+    header {
+      background-color: #020617;
+      padding: 20px;
+    }
+
+    main {
+      padding: 40px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .card {
+      background-color: #020617;
+      padding: 20px;
+      margin: auto;
+      width: 300px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>🪖 צבא בארפי</h1>
+    <p>משמעת · קהילה · כוח</p>
+  </header>
+
+  <main>
+
+    <!-- מסך כניסה -->
+    <div id="login" class="card">
+      <h2>כניסת חייל</h2>
+      <input type="text" id="username" placeholder="שם משתמש">
+      <br>
+      <button onclick="login()">כניסה</button>
+    </div>
+
+    <!-- לוח בקרה -->
+    <div id="dashboard" class="card hidden">
+      <h2 id="welcome"></h2>
+      <p>דרגה נוכחית:</p>
+      <h3 id="rank">טוראי</h3>
+      <button onclick="promote()">קדם דרגה</button>
+    </div>
+
+  </main>
+
+  <!-- לוגיקה -->
+  <script>
+    const ranks = [
+      "טוראי",
+      "רב טוראי",
+      "סמל",
+      "סמל ראשון",
+      "קצין"
+    ];
+
+    let currentRank = 0;
+
+    function login() {
+      const username = document.getElementById("username").value;
+
+      if (!username) {
+        alert("חייב להכניס שם משתמש");
+        return;
+      }
+
+      document.getElementById("login").classList.add("hidden");
+      document.getElementById("dashboard").classList.remove("hidden");
+      document.getElementById("welcome").innerText = "ברוך הבא, " + username;
+    }
+
+    function promote() {
+      if (currentRank < ranks.length - 1) {
+        currentRank++;
+        document.getElementById("rank").innerText = ranks[currentRank];
+      } else {
+        alert("הגעת לדרגה המקסימלית 🫡");
+      }
+    }
+  </script>
+
+</body>
+</html>

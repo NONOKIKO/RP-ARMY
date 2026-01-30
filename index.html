@@ -100,4 +100,162 @@ canvas{background:#020617;border:1px solid #334155}
     <p id="userInfo"></p>
     <button onclick="openRoom('ops')">🗺️ מבצעים</button>
     <button onclick="openRoom('mainChat')">💬 צ׳אט</button>
-    <button
+    <button id="cmdBtn" onclick="openRoom('commanders')">👑 מפקדים</button>
+    <button onclick="openRoom('map')">🗺️ מפה</button>
+    <button onclick="openRoom('logs')">🗂️ יומן</button>
+  </div>
+
+  <div class="content">
+
+    <div id="ops" class="room">
+      <h3>🗺️ חדר מבצעים</h3>
+      <div class="chat-box" id="opsBox"></div>
+      <div class="chat-input">
+        <input id="opsInput"><button onclick="send('ops')">שלח</button>
+      </div>
+    </div>
+
+    <div id="mainChat" class="room hidden">
+      <h3>💬 צ׳אט ראשי</h3>
+      <div class="chat-box" id="mainChatBox"></div>
+      <div class="chat-input">
+        <input id="mainChatInput"><button onclick="send('mainChat')">שלח</button>
+      </div>
+    </div>
+
+    <div id="commanders" class="room hidden">
+      <h3>👑 חדר מפקדים</h3>
+      <div class="chat-box" id="commandersBox"></div>
+      <div class="chat-input">
+        <input id="commandersInput"><button onclick="send('commanders')">שלח</button>
+      </div>
+    </div>
+
+    <div id="map" class="room hidden">
+      <h3>🗺️ מפה חיה</h3>
+      <canvas id="mapCanvas" width="500" height="300"></canvas>
+    </div>
+
+    <div id="logs" class="room hidden">
+      <h3>🗂️ יומן פעולות</h3>
+      <div class="chat-box" id="logBox"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* דרגות */
+const ranks=[
+"טוראי","רב״ט","סמל","סמל ראשון","סג״ם","סגן","סרן","רב סרן",
+"טייס חיל-האוויר","טייס בכיר חיל-האוויר","סגן משנה חיל-האוויר",
+"סגן מפקד חיל-האוויר","מפקד חיל-האוויר",
+"סגן אלוף","אלוף משנה","תת אלוף","אלוף","רב אלוף"
+];
+const CMD_INDEX=ranks.indexOf("מפקד חיל-האוויר");
+const CMD_PASSWORD="1234";
+
+ranks.forEach(r=>rankSelect.appendChild(new Option(r,r)));
+
+let user={};
+
+/* מעבר משם לדרגה */
+function goToRank(){
+  if(!username.value) return alert("חייב שם");
+  stepName.classList.add("hidden");
+  stepRank.classList.remove("hidden");
+  namePreview.innerText="שלום " + username.value;
+}
+
+/* כניסה */
+function login(){
+  user.name=username.value;
+  user.rank=rankSelect.value;
+  user.i=ranks.indexOf(user.rank);
+
+  if(user.i>=CMD_INDEX && cmdPass.value!==CMD_PASSWORD)
+    return alert("סיסמת מפקדים שגויה");
+
+  stepRank.classList.add("hidden");
+  system.classList.remove("hidden");
+
+  userInfo.innerText=user.rank+" | "+user.name;
+  if(user.i<CMD_INDEX) cmdBtn.classList.add("hidden");
+
+  loadAll();
+  initMap();
+  log(`התחברות: ${user.rank} ${user.name}`);
+}
+
+/* חדרים */
+function openRoom(id){
+  document.querySelectorAll(".room").forEach(r=>r.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+}
+
+/* שליחה + בוט */
+function send(room){
+  const input=document.getElementById(room+"Input");
+  if(!input.value)return;
+  let msg=input.value;
+
+  if(msg.startsWith("/")) return bot(msg,room);
+
+  save(room,`${user.rank} ${user.name}: ${msg}`);
+  log(`הודעה ב-${room}`);
+  input.value="";
+  load(room);
+}
+
+/* בוט */
+function bot(cmd,room){
+  if(cmd==="/status") save(room,"[BOT] כל המערכות תקינות");
+  if(cmd==="/clear"){localStorage.removeItem(room);load(room);}
+  if(cmd.startsWith("/alert")) save("ops","[ALERT] "+cmd.slice(7));
+  log(`פקודה: ${cmd}`);
+}
+
+/* אחסון */
+function save(room,msg){
+  let d=JSON.parse(localStorage.getItem(room)||"[]");
+  d.push(msg);
+  localStorage.setItem(room,JSON.stringify(d));
+}
+function load(room){
+  const box=document.getElementById(room+"Box");
+  if(!box)return;
+  box.innerHTML=(JSON.parse(localStorage.getItem(room)||"[]"))
+    .map(m=>`<p>${m}</p>`).join("");
+  box.scrollTop=box.scrollHeight;
+}
+function loadAll(){["ops","mainChat","commanders"].forEach(load);loadLogs();}
+
+/* יומן */
+function log(text){
+  let l=JSON.parse(localStorage.getItem("logs")||"[]");
+  l.push(new Date().toLocaleTimeString()+" - "+text);
+  localStorage.setItem("logs",JSON.stringify(l));
+  loadLogs();
+}
+function loadLogs(){
+  logBox.innerHTML=(JSON.parse(localStorage.getItem("logs")||"[]"))
+    .map(e=>`<p class="log">${e}</p>`).join("");
+}
+
+/* מפה */
+function initMap(){
+  const c=mapCanvas,ctx=c.getContext("2d");
+  setInterval(()=>{
+    ctx.clearRect(0,0,c.width,c.height);
+    for(let i=0;i<5;i++){
+      ctx.fillStyle="#22c55e";
+      ctx.beginPath();
+      ctx.arc(Math.random()*500,Math.random()*300,6,0,7);
+      ctx.fill();
+    }
+  },3000);
+}
+</script>
+
+</body>
+</html>

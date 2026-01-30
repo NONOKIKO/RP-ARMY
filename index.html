@@ -5,92 +5,139 @@
 <title>PG IDF</title>
 
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Arial;
-  background:#0f172a;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#020617;
   color:white;
   text-align:center;
 }
-header{
-  background:#020617;
-  padding:20px;
+
+/* צבעים */
+:root{
+  --green:#22c55e;
+  --dark:#020617;
+  --card:#020617;
 }
-.hidden{display:none}
+
+/* כותרת */
+.header-big{
+  font-size:64px;
+  font-weight:900;
+  color:var(--green);
+  margin-top:80px;
+  letter-spacing:4px;
+}
+
+.sub{
+  color:#a7f3d0;
+  margin-bottom:40px;
+}
+
+/* כרטיסים */
 .card{
   background:#020617;
-  padding:30px;
-  max-width:420px;
-  margin:80px auto;
-  border-radius:10px;
+  border:2px solid var(--green);
+  box-shadow:0 0 20px rgba(34,197,94,.4);
+  border-radius:12px;
+  max-width:480px;
+  margin:40px auto;
+  padding:40px;
 }
+
 input,select,button{
-  padding:12px;
-  width:90%;
-  font-size:16px;
-  margin-top:10px;
-}
-button{
-  background:#1e293b;
-  color:white;
+  width:100%;
+  padding:16px;
+  font-size:18px;
+  margin-top:15px;
+  border-radius:8px;
   border:none;
+}
+
+input,select{
+  background:#020617;
+  color:white;
+  border:2px solid var(--green);
+}
+
+button{
+  background:var(--green);
+  color:#022c22;
+  font-weight:700;
   cursor:pointer;
 }
+
+button:hover{
+  box-shadow:0 0 15px rgba(34,197,94,.7);
+}
+
+.hidden{display:none}
+
+/* מערכת */
 .container{
   display:flex;
-  height:calc(100vh - 90px);
+  height:100vh;
 }
 .sidebar{
   width:260px;
   background:#020617;
-  padding:10px;
+  border-right:2px solid var(--green);
+  padding:15px;
 }
 .sidebar button{
-  width:100%;
-  margin-bottom:6px;
+  margin-bottom:10px;
 }
 .content{
   flex:1;
-  padding:15px;
+  padding:20px;
   text-align:left;
 }
 .chat-box{
+  background:#020617;
+  border:1px solid var(--green);
   height:260px;
   overflow-y:auto;
-  background:#020617;
-  padding:8px;
-  margin-bottom:6px;
+  padding:10px;
+  margin-bottom:10px;
 }
 .chat-input{
   display:flex;
   gap:5px;
 }
 .chat-input input{flex:1}
-.log{font-size:13px;color:#cbd5f5}
-canvas{background:#020617;border:1px solid #334155}
+.log{font-size:13px;color:#86efac}
+canvas{
+  border:1px solid var(--green);
+  background:#020617;
+}
 </style>
 </head>
 
 <body>
 
-<header>
-  <h1>PG IDF</h1>
-  <p>מערכת פיקוד פנימית</p>
-</header>
+<!-- שלב 1: שם -->
+<div id="stepName">
+  <div class="header-big">PG IDF</div>
+  <div class="sub">מערכת פיקוד צבאית</div>
 
-<!-- שלב 1: בחירת שם -->
-<div id="stepName" class="card">
-  <h2>הזדהות</h2>
-  <input id="username" placeholder="הכנס שם">
-  <button onclick="goToRank()">המשך</button>
+  <div class="card">
+    <h2>בחירת שם</h2>
+    <input id="username" placeholder="הכנס שם">
+    <button onclick="confirmName()">אישור שם</button>
+  </div>
 </div>
 
-<!-- שלב 2: בחירת דרגה -->
-<div id="stepRank" class="card hidden">
-  <h2 id="namePreview"></h2>
-  <select id="rankSelect"></select>
-  <input id="cmdPass" placeholder="סיסמת מפקדים (אם יש)">
-  <button onclick="login()">כניסה למערכת</button>
+<!-- שלב 2: דרגה -->
+<div id="stepRank" class="hidden">
+  <div class="header-big">בחירת דרגה</div>
+
+  <div class="card">
+    <h2 id="namePreview"></h2>
+    <select id="rankSelect"></select>
+    <input id="cmdPass" placeholder="סיסמת מפקדים (אם יש)">
+    <button onclick="enterSystem()">כניסה למערכת</button>
+  </div>
 </div>
 
 <!-- מערכת -->
@@ -98,46 +145,46 @@ canvas{background:#020617;border:1px solid #334155}
 
   <div class="sidebar">
     <p id="userInfo"></p>
+    <button onclick="openRoom('main')">💬 צ׳אט</button>
     <button onclick="openRoom('ops')">🗺️ מבצעים</button>
-    <button onclick="openRoom('mainChat')">💬 צ׳אט</button>
-    <button id="cmdBtn" onclick="openRoom('commanders')">👑 מפקדים</button>
+    <button id="cmdBtn" onclick="openRoom('cmd')">👑 מפקדים</button>
     <button onclick="openRoom('map')">🗺️ מפה</button>
     <button onclick="openRoom('logs')">🗂️ יומן</button>
   </div>
 
   <div class="content">
 
-    <div id="ops" class="room">
-      <h3>🗺️ חדר מבצעים</h3>
+    <div id="main" class="room">
+      <h2>💬 צ׳אט ראשי</h2>
+      <div class="chat-box" id="mainBox"></div>
+      <div class="chat-input">
+        <input id="mainInput"><button onclick="send('main')">שלח</button>
+      </div>
+    </div>
+
+    <div id="ops" class="room hidden">
+      <h2>🗺️ חדר מבצעים</h2>
       <div class="chat-box" id="opsBox"></div>
       <div class="chat-input">
         <input id="opsInput"><button onclick="send('ops')">שלח</button>
       </div>
     </div>
 
-    <div id="mainChat" class="room hidden">
-      <h3>💬 צ׳אט ראשי</h3>
-      <div class="chat-box" id="mainChatBox"></div>
+    <div id="cmd" class="room hidden">
+      <h2>👑 חדר מפקדים</h2>
+      <div class="chat-box" id="cmdBox"></div>
       <div class="chat-input">
-        <input id="mainChatInput"><button onclick="send('mainChat')">שלח</button>
-      </div>
-    </div>
-
-    <div id="commanders" class="room hidden">
-      <h3>👑 חדר מפקדים</h3>
-      <div class="chat-box" id="commandersBox"></div>
-      <div class="chat-input">
-        <input id="commandersInput"><button onclick="send('commanders')">שלח</button>
+        <input id="cmdInput"><button onclick="send('cmd')">שלח</button>
       </div>
     </div>
 
     <div id="map" class="room hidden">
-      <h3>🗺️ מפה חיה</h3>
+      <h2>🗺️ מפה חיה</h2>
       <canvas id="mapCanvas" width="500" height="300"></canvas>
     </div>
 
     <div id="logs" class="room hidden">
-      <h3>🗂️ יומן פעולות</h3>
+      <h2>🗂️ יומן פעולות</h2>
       <div class="chat-box" id="logBox"></div>
     </div>
 
@@ -159,16 +206,16 @@ ranks.forEach(r=>rankSelect.appendChild(new Option(r,r)));
 
 let user={};
 
-/* מעבר משם לדרגה */
-function goToRank(){
+/* שלב 1 */
+function confirmName(){
   if(!username.value) return alert("חייב שם");
   stepName.classList.add("hidden");
   stepRank.classList.remove("hidden");
   namePreview.innerText="שלום " + username.value;
 }
 
-/* כניסה */
-function login(){
+/* שלב 2 */
+function enterSystem(){
   user.name=username.value;
   user.rank=rankSelect.value;
   user.i=ranks.indexOf(user.rank);
@@ -180,11 +227,9 @@ function login(){
   system.classList.remove("hidden");
 
   userInfo.innerText=user.rank+" | "+user.name;
-  if(user.i<CMD_INDEX) cmdBtn.classList.add("hidden");
+  if(user.i<CMD_INDEX) cmdBtn.style.display="none";
 
-  loadAll();
   initMap();
-  log(`התחברות: ${user.rank} ${user.name}`);
 }
 
 /* חדרים */
@@ -193,53 +238,20 @@ function openRoom(id){
   document.getElementById(id).classList.remove("hidden");
 }
 
-/* שליחה + בוט */
+/* צ׳אט */
 function send(room){
   const input=document.getElementById(room+"Input");
-  if(!input.value)return;
-  let msg=input.value;
-
-  if(msg.startsWith("/")) return bot(msg,room);
-
-  save(room,`${user.rank} ${user.name}: ${msg}`);
+  const box=document.getElementById(room+"Box");
+  if(!input.value) return;
+  box.innerHTML+=`<p>${user.rank} ${user.name}: ${input.value}</p>`;
   log(`הודעה ב-${room}`);
   input.value="";
-  load(room);
-}
-
-/* בוט */
-function bot(cmd,room){
-  if(cmd==="/status") save(room,"[BOT] כל המערכות תקינות");
-  if(cmd==="/clear"){localStorage.removeItem(room);load(room);}
-  if(cmd.startsWith("/alert")) save("ops","[ALERT] "+cmd.slice(7));
-  log(`פקודה: ${cmd}`);
-}
-
-/* אחסון */
-function save(room,msg){
-  let d=JSON.parse(localStorage.getItem(room)||"[]");
-  d.push(msg);
-  localStorage.setItem(room,JSON.stringify(d));
-}
-function load(room){
-  const box=document.getElementById(room+"Box");
-  if(!box)return;
-  box.innerHTML=(JSON.parse(localStorage.getItem(room)||"[]"))
-    .map(m=>`<p>${m}</p>`).join("");
   box.scrollTop=box.scrollHeight;
 }
-function loadAll(){["ops","mainChat","commanders"].forEach(load);loadLogs();}
 
 /* יומן */
-function log(text){
-  let l=JSON.parse(localStorage.getItem("logs")||"[]");
-  l.push(new Date().toLocaleTimeString()+" - "+text);
-  localStorage.setItem("logs",JSON.stringify(l));
-  loadLogs();
-}
-function loadLogs(){
-  logBox.innerHTML=(JSON.parse(localStorage.getItem("logs")||"[]"))
-    .map(e=>`<p class="log">${e}</p>`).join("");
+function log(t){
+  logBox.innerHTML+=`<p class="log">${new Date().toLocaleTimeString()} - ${t}</p>`;
 }
 
 /* מפה */

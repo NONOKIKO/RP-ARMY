@@ -2,94 +2,95 @@
 <html lang="he">
 <head>
 <meta charset="UTF-8">
-<title>🪖 מערכת צבא בארפי</title>
+<title>PG IDF</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #0f172a;
-  color: white;
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+  text-align:center;
 }
-
-header {
-  background: #020617;
-  padding: 15px;
-  text-align: center;
+header{
+  background:#020617;
+  padding:20px;
 }
-
-.hidden { display: none; }
-
-.container {
-  display: flex;
-  height: calc(100vh - 70px);
+.hidden{display:none}
+.card{
+  background:#020617;
+  padding:30px;
+  max-width:420px;
+  margin:80px auto;
+  border-radius:10px;
 }
-
-.sidebar {
-  width: 260px;
-  background: #020617;
-  padding: 15px;
+input,select,button{
+  padding:12px;
+  width:90%;
+  font-size:16px;
+  margin-top:10px;
 }
-
-.sidebar button {
-  width: 100%;
-  margin-bottom: 8px;
-  padding: 10px;
-  background: #1e293b;
-  color: white;
-  border: none;
-  cursor: pointer;
+button{
+  background:#1e293b;
+  color:white;
+  border:none;
+  cursor:pointer;
 }
-
-.content {
-  flex: 1;
-  padding: 20px;
+.container{
+  display:flex;
+  height:calc(100vh - 90px);
 }
-
-.card {
-  background: #020617;
-  padding: 20px;
-  max-width: 420px;
-  margin: 60px auto;
-  text-align: center;
+.sidebar{
+  width:260px;
+  background:#020617;
+  padding:10px;
 }
-
-input, select {
-  padding: 10px;
-  width: 95%;
-  margin-bottom: 10px;
+.sidebar button{
+  width:100%;
+  margin-bottom:6px;
 }
-
-.chat-box {
-  height: 300px;
-  overflow-y: auto;
-  background: #020617;
-  padding: 10px;
-  margin-bottom: 10px;
+.content{
+  flex:1;
+  padding:15px;
+  text-align:left;
 }
-
-.chat-input {
-  display: flex;
-  gap: 5px;
+.chat-box{
+  height:260px;
+  overflow-y:auto;
+  background:#020617;
+  padding:8px;
+  margin-bottom:6px;
 }
-.chat-input input {
-  flex: 1;
+.chat-input{
+  display:flex;
+  gap:5px;
 }
+.chat-input input{flex:1}
+.log{font-size:13px;color:#cbd5f5}
+canvas{background:#020617;border:1px solid #334155}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>🪖 מערכת צבא בארפי</h1>
+  <h1>PG IDF</h1>
+  <p>מערכת פיקוד פנימית</p>
 </header>
 
-<!-- התחברות -->
-<div id="login" class="card">
-  <h2>כניסה למערכת</h2>
-  <input id="username" placeholder="שם משתמש">
+<!-- שלב 1: בחירת שם -->
+<div id="stepName" class="card">
+  <h2>הזדהות</h2>
+  <input id="username" placeholder="הכנס שם">
+  <button onclick="goToRank()">המשך</button>
+</div>
+
+<!-- שלב 2: בחירת דרגה -->
+<div id="stepRank" class="card hidden">
+  <h2 id="namePreview"></h2>
   <select id="rankSelect"></select>
-  <button onclick="login()">כניסה</button>
+  <input id="cmdPass" placeholder="סיסמת מפקדים (אם יש)">
+  <button onclick="login()">כניסה למערכת</button>
 </div>
 
 <!-- מערכת -->
@@ -97,6 +98,6 @@ input, select {
 
   <div class="sidebar">
     <p id="userInfo"></p>
-    <button onclick="openRoom('ops')">🗺️ חדר מבצעים</button>
-    <button onclick="openRoom('mainChat')">💬 צ׳אט ראשי</button>
-    <button id="cmdBtn" onclick="openRoom('commanders')">👑 חדר מפק
+    <button onclick="openRoom('ops')">🗺️ מבצעים</button>
+    <button onclick="openRoom('mainChat')">💬 צ׳אט</button>
+    <button

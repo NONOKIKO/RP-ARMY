@@ -26,7 +26,7 @@ header {
 }
 
 .sidebar {
-  width: 250px;
+  width: 260px;
   background: #020617;
   padding: 15px;
 }
@@ -49,15 +49,31 @@ header {
 .card {
   background: #020617;
   padding: 20px;
-  max-width: 400px;
+  max-width: 420px;
   margin: 60px auto;
   text-align: center;
 }
 
 input, select {
   padding: 10px;
-  width: 90%;
+  width: 95%;
   margin-bottom: 10px;
+}
+
+.chat-box {
+  height: 300px;
+  overflow-y: auto;
+  background: #020617;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.chat-input {
+  display: flex;
+  gap: 5px;
+}
+.chat-input input {
+  flex: 1;
 }
 </style>
 </head>
@@ -83,74 +99,4 @@ input, select {
     <p id="userInfo"></p>
     <button onclick="openRoom('ops')">🗺️ חדר מבצעים</button>
     <button onclick="openRoom('mainChat')">💬 צ׳אט ראשי</button>
-    <button onclick="openRoom('commanders')">👑 חדר מפקדים</button>
-    <button onclick="openRoom('updates')">📢 עדכונים</button>
-    <button onclick="openRoom('cmdUpdates')">📌 עדכוני מפקדים</button>
-  </div>
-
-  <div class="content">
-    <div id="ops" class="room">
-      <h2>🗺️ חדר מבצעים</h2>
-      <p>סטטוס כוחות: פעיל</p>
-      <p>אזורי פעילות: צפון / דרום</p>
-      <p>ראיות: אין חריגות</p>
-    </div>
-
-    <div id="mainChat" class="room hidden">
-      <h2>💬 צ׳אט ראשי</h2>
-      <p>[מערכת] ברוכים הבאים לצ׳אט הראשי</p>
-    </div>
-
-    <div id="commanders" class="room hidden">
-      <h2>👑 חדר מפקדים</h2>
-      <p>גישה למפקדים בלבד</p>
-    </div>
-
-    <div id="updates" class="room hidden">
-      <h2>📢 עדכונים</h2>
-      <ul>
-        <li>אימון כללי – 18:00</li>
-        <li>בדיקת כוננות</li>
-      </ul>
-    </div>
-
-    <div id="cmdUpdates" class="room hidden">
-      <h2>📌 עדכוני מפקדים</h2>
-      <p>פקודה 102 אושרה</p>
-    </div>
-  </div>
-</div>
-
-<script>
-const ranks = [
-  "טוראי","רב״ט","סמל","סמל ראשון","סג״ם","סגן","סרן","רב סרן",
-  "טייס חיל-האוויר","טייס בכיר חיל-האוויר","סגן משנה חיל-האוויר",
-  "סגן מפקד חיל-האוויר","מפקד חיל-האוויר",
-  "סגן אלוף","אלוף משנה","תת אלוף","אלוף","רב אלוף"
-];
-
-const select = document.getElementById("rankSelect");
-ranks.forEach(r => {
-  const opt = document.createElement("option");
-  opt.textContent = r;
-  select.appendChild(opt);
-});
-
-function login() {
-  const name = username.value;
-  const rank = select.value;
-  if (!name) return alert("חסר שם משתמש");
-
-  document.getElementById("login").classList.add("hidden");
-  document.getElementById("system").classList.remove("hidden");
-  document.getElementById("userInfo").innerText = name + " | " + rank;
-}
-
-function openRoom(id) {
-  document.querySelectorAll(".room").forEach(r => r.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-}
-</script>
-
-</body>
-</html>
+    <button id="cmdBtn" onclick="openRoom('commanders')">👑 חדר מפק

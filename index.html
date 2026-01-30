@@ -1,115 +1,156 @@
 <!DOCTYPE html>
 <html lang="he">
 <head>
-  <meta charset="UTF-8">
-  <title>🪖 צבא בארפי</title>
+<meta charset="UTF-8">
+<title>🪖 מערכת צבא בארפי</title>
 
-  <!-- עיצוב -->
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #0f172a;
-      color: white;
-      text-align: center;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+}
 
-    header {
-      background-color: #020617;
-      padding: 20px;
-    }
+header {
+  background: #020617;
+  padding: 15px;
+  text-align: center;
+}
 
-    main {
-      padding: 40px;
-    }
+.hidden { display: none; }
 
-    input {
-      padding: 10px;
-      font-size: 16px;
-    }
+.container {
+  display: flex;
+  height: calc(100vh - 70px);
+}
 
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
+.sidebar {
+  width: 250px;
+  background: #020617;
+  padding: 15px;
+}
 
-    .hidden {
-      display: none;
-    }
+.sidebar button {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 10px;
+  background: #1e293b;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
 
-    .card {
-      background-color: #020617;
-      padding: 20px;
-      margin: auto;
-      width: 300px;
-      border-radius: 8px;
-    }
-  </style>
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+.card {
+  background: #020617;
+  padding: 20px;
+  max-width: 400px;
+  margin: 60px auto;
+  text-align: center;
+}
+
+input, select {
+  padding: 10px;
+  width: 90%;
+  margin-bottom: 10px;
+}
+</style>
 </head>
 
 <body>
 
-  <header>
-    <h1>🪖 צבא בארפי</h1>
-    <p>משמעת · קהילה · כוח</p>
-  </header>
+<header>
+  <h1>🪖 מערכת צבא בארפי</h1>
+</header>
 
-  <main>
+<!-- התחברות -->
+<div id="login" class="card">
+  <h2>כניסה למערכת</h2>
+  <input id="username" placeholder="שם משתמש">
+  <select id="rankSelect"></select>
+  <button onclick="login()">כניסה</button>
+</div>
 
-    <!-- מסך כניסה -->
-    <div id="login" class="card">
-      <h2>כניסת חייל</h2>
-      <input type="text" id="username" placeholder="שם משתמש">
-      <br>
-      <button onclick="login()">כניסה</button>
+<!-- מערכת -->
+<div id="system" class="container hidden">
+
+  <div class="sidebar">
+    <p id="userInfo"></p>
+    <button onclick="openRoom('ops')">🗺️ חדר מבצעים</button>
+    <button onclick="openRoom('mainChat')">💬 צ׳אט ראשי</button>
+    <button onclick="openRoom('commanders')">👑 חדר מפקדים</button>
+    <button onclick="openRoom('updates')">📢 עדכונים</button>
+    <button onclick="openRoom('cmdUpdates')">📌 עדכוני מפקדים</button>
+  </div>
+
+  <div class="content">
+    <div id="ops" class="room">
+      <h2>🗺️ חדר מבצעים</h2>
+      <p>סטטוס כוחות: פעיל</p>
+      <p>אזורי פעילות: צפון / דרום</p>
+      <p>ראיות: אין חריגות</p>
     </div>
 
-    <!-- לוח בקרה -->
-    <div id="dashboard" class="card hidden">
-      <h2 id="welcome"></h2>
-      <p>דרגה נוכחית:</p>
-      <h3 id="rank">טוראי</h3>
-      <button onclick="promote()">קדם דרגה</button>
+    <div id="mainChat" class="room hidden">
+      <h2>💬 צ׳אט ראשי</h2>
+      <p>[מערכת] ברוכים הבאים לצ׳אט הראשי</p>
     </div>
 
-  </main>
+    <div id="commanders" class="room hidden">
+      <h2>👑 חדר מפקדים</h2>
+      <p>גישה למפקדים בלבד</p>
+    </div>
 
-  <!-- לוגיקה -->
-  <script>
-    const ranks = [
-      "טוראי",
-      "רב טוראי",
-      "סמל",
-      "סמל ראשון",
-      "קצין"
-    ];
+    <div id="updates" class="room hidden">
+      <h2>📢 עדכונים</h2>
+      <ul>
+        <li>אימון כללי – 18:00</li>
+        <li>בדיקת כוננות</li>
+      </ul>
+    </div>
 
-    let currentRank = 0;
+    <div id="cmdUpdates" class="room hidden">
+      <h2>📌 עדכוני מפקדים</h2>
+      <p>פקודה 102 אושרה</p>
+    </div>
+  </div>
+</div>
 
-    function login() {
-      const username = document.getElementById("username").value;
+<script>
+const ranks = [
+  "טוראי","רב״ט","סמל","סמל ראשון","סג״ם","סגן","סרן","רב סרן",
+  "טייס חיל-האוויר","טייס בכיר חיל-האוויר","סגן משנה חיל-האוויר",
+  "סגן מפקד חיל-האוויר","מפקד חיל-האוויר",
+  "סגן אלוף","אלוף משנה","תת אלוף","אלוף","רב אלוף"
+];
 
-      if (!username) {
-        alert("חייב להכניס שם משתמש");
-        return;
-      }
+const select = document.getElementById("rankSelect");
+ranks.forEach(r => {
+  const opt = document.createElement("option");
+  opt.textContent = r;
+  select.appendChild(opt);
+});
 
-      document.getElementById("login").classList.add("hidden");
-      document.getElementById("dashboard").classList.remove("hidden");
-      document.getElementById("welcome").innerText = "ברוך הבא, " + username;
-    }
+function login() {
+  const name = username.value;
+  const rank = select.value;
+  if (!name) return alert("חסר שם משתמש");
 
-    function promote() {
-      if (currentRank < ranks.length - 1) {
-        currentRank++;
-        document.getElementById("rank").innerText = ranks[currentRank];
-      } else {
-        alert("הגעת לדרגה המקסימלית 🫡");
-      }
-    }
-  </script>
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("system").classList.remove("hidden");
+  document.getElementById("userInfo").innerText = name + " | " + rank;
+}
+
+function openRoom(id) {
+  document.querySelectorAll(".room").forEach(r => r.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+}
+</script>
 
 </body>
 </html>
